@@ -17,8 +17,6 @@ class Game
         roundCount = 0;
         do 
         {
-            //roundCount = roundCount + 1;
-            //roundCount += 1;
             roundCount++;
 
             Console.Write( "Please enter a guess between -1 and 11: " );
