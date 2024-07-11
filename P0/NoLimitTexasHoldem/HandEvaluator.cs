@@ -20,6 +20,48 @@ namespace NoLimitTexasHoldem
                                     .OrderByDescending(group => group.Count())
                                     .ToList();
 
+            /*//Checking for Straight Flush
+            if (IsStraightFlush(hand))
+            {
+                return HandRank.StraightFlush;
+            }*/
+
+            //Checking for Quads
+            if (groupedByRank[0].Count() == 4)
+            {
+                return HandRank.Quads;
+            }
+
+            //Checking for Full House
+            if (groupedByRank[0].Count() == 3 && groupedByRank[1].Count() == 2)
+            {
+                return HandRank.FullHouse;
+            }
+
+            //Checking for Flush
+            if (groupedBySuit[0].Count() >= 5)
+            {
+                return HandRank.Flush;
+            }
+
+            /*//Checking for Straight
+            if ()
+            {
+                return HandRank.Straight;
+            }*/
+
+            //Checking for Trips
+            if (groupedByRank[0].Count() == 3)
+            {
+                return HandRank.Trips;
+            }
+
+            //Checking for Two Pair
+            if (groupedByRank[0].Count() == 2 && groupedByRank[1].Count() == 2)
+            {
+                return HandRank.TwoPair;
+            }
+            
             //Checking for One Pair
             if (groupedByRank[0].Count() == 2)
             {
