@@ -1,4 +1,4 @@
--The player and machine should both be dealt 2 hole cards.
--The player should be able to see the 5 community cards dealt.
--The program should tell the player what hand the player and machine have (full house, royal flush, etc).
--Based on what the player and machine have, the program should tell the player who wins.
+- The player and machine should both be dealt 2 hole cards.
+- The player should be able to see the 5 community cards dealt.
+- The program should tell the player what hand the player and machine have (full house, royal flush, etc).
+- Based on what the player and machine have, the program should tell the player who wins.
