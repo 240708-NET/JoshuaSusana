@@ -30,6 +30,20 @@ namespace NoLimitTexasHoldem
             Card communityCard5 = deck.Deal();
 
             Console.WriteLine($"The community cards are \n {communityCard1} \n {communityCard2} \n {communityCard3} \n {communityCard4} \n {communityCard5}");
+
+            //Combining hole cards with community cards for both players
+            List<Card> playerHand = new List<Card> { playerCard1, playerCard2, communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 };
+            List<Card> machineHand = new List<Card> { machineCard1, machineCard2, communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 };
+
+            HandEvaluator handevaluator = new HandEvaluator();
+
+            //Evaluating each player's hand
+            HandRank playerHandRank = handevaluator.EvaluateHand(playerHand);
+            HandRank machineHandRank = handevaluator.EvaluateHand(machineHand);
+
+            // Output hand ranks
+            Console.WriteLine($"Player has {playerHandRank}");
+            Console.WriteLine($"Machine has {machineHandRank}");
         }
     }
 }
