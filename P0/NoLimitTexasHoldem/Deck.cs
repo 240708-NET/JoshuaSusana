@@ -1,4 +1,4 @@
-using System;       //For the random class
+using System;                           //For the random class
 using System.Collections.Generic;       //To be able to use Lists
 
 namespace NoLimitTexasHoldem
