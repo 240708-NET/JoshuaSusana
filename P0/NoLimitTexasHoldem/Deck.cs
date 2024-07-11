@@ -1,5 +1,4 @@
-using System;                           //For the random class
-using System.Collections.Generic;       //To be able to use Lists
+using System;                           //For the random class and lists
 
 namespace NoLimitTexasHoldem
 {
@@ -11,7 +10,7 @@ namespace NoLimitTexasHoldem
 
         public Deck()
         {
-            //Creating a List object that holds Card objects
+            //Instantiating a List object that holds Card objects
             cards = new List<Card>();
 
             //Note that these are in the constructor instead of with the other attributes since I do not expect the arrays to be
@@ -36,14 +35,14 @@ namespace NoLimitTexasHoldem
         {
             for(int i=0; i<52; i++)
             {
-                //Generate a random number between 0 and i+1
+                //Generate a random number between 0 and i+1 (Including 0 and exclusing i+1)
                 int j = random.Next(i + 1); 
                 //Using temp method to swap cards an indices i and j
                 Card temp = cards[i];       
                 cards[i] = cards[j];
                 cards[j] = temp;
 
-                //This uses the Fisher-Yates, one of the first things that came up for me in my online lookups
+                //This uses the Fisher-Yates Shuffle, one of the first things that came up for me in my online lookups
             }
         }
 

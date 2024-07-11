@@ -35,6 +35,7 @@ namespace NoLimitTexasHoldem
             List<Card> playerHand = new List<Card> { playerCard1, playerCard2, communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 };
             List<Card> machineHand = new List<Card> { machineCard1, machineCard2, communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 };
 
+            //Instantiating a HandEvaluator object
             HandEvaluator handevaluator = new HandEvaluator();
 
             //Evaluating each player's hand
