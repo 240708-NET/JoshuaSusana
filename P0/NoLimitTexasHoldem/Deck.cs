@@ -13,12 +13,23 @@ namespace NoLimitTexasHoldem
             //Instantiating a List object that holds Card objects
             cards = new List<Card>();
 
-            //Note that these are in the constructor instead of with the other attributes since I do not expect the arrays to be
-            //needed anywhere else but in initialization
+            //Instantiating a Random object
+            random = new Random();
+
+            //Call this upon instantiation
+            InitializeDeck();
+        }
+
+        //Created this method to be able to "pick up all the cards" after every hand
+        public void InitializeDeck()
+        {
+            //First making list/deck empty
+            cards.Clear();
+            
+            //Rest is repopulating list/deck
             string[] suits = { "Spades", "Hearts", "Diamonds", "Clubs" };
             string[] ranks = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
 
-            //For each card that exists in a standard deck of playing cards, add it to the deck
             foreach (string suit in suits)
             {
                 foreach (string rank in ranks)
@@ -26,9 +37,6 @@ namespace NoLimitTexasHoldem
                     cards.Add(new Card(suit, rank));
                 }
             }
-
-            //Instantiating a Random object
-            random = new Random();
         }
 
         public void Shuffle()
