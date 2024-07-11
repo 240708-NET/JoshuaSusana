@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;       //To be able to use lists
 using System.Linq;                      //So I can use GroupBy, OrderBy, etc.
 
@@ -20,11 +21,10 @@ namespace NoLimitTexasHoldem
                                     .OrderByDescending(group => group.Count())
                                     .ToList();
 
-            /*//Checking for Straight Flush
             if (IsStraightFlush(hand))
             {
                 return HandRank.StraightFlush;
-            }*/
+            }
 
             //Checking for Quads
             if (groupedByRank[0].Count() == 4)
@@ -43,12 +43,12 @@ namespace NoLimitTexasHoldem
             {
                 return HandRank.Flush;
             }
-
-            /*//Checking for Straight
-            if ()
+            
+            //Checking for Straight
+            if (IsStraight(hand))
             {
                 return HandRank.Straight;
-            }*/
+            }
 
             //Checking for Trips
             if (groupedByRank[0].Count() == 3)
@@ -70,6 +70,74 @@ namespace NoLimitTexasHoldem
             
             //If we reach here, then must be high card
             return HandRank.HighCard;
+        }
+        //Method to convert card rankings to an int system
+        public int RankToInt(string rank)
+        {
+            if(rank == "2") return 2;
+            else if(rank == "3") return 3;
+            else if(rank == "4") return 4;
+            else if(rank == "5") return 5;
+            else if(rank == "6") return 6;
+            else if(rank == "7") return 7;
+            else if(rank == "8") return 8;
+            else if(rank == "9") return 9;
+            else if(rank == "10") return 10;
+            else if(rank == "J") return 11;
+            else if(rank == "Q") return 12;
+            else if(rank == "K") return 13;
+            else if(rank == "A") return 14;
+            else throw new ArgumentException("Invalid card rank");
+        }
+
+        //Created a method to check for straight so that above looks neater, more "methodical"
+        public bool IsStraight(List<Card> hand)
+        {
+            //Transforms each card object into just the rank attribute, then removes duplicates, then converts to int, 
+            //then sorts in ascending order, then converts to a lsit
+            var orderedByRank = hand.Select(card => card.Rank)
+                                   .Distinct()
+                                   .Select(RankToInt)
+                                   .OrderBy(rank => rank)
+                                   .ToList();
+
+            //Since already ordered numerically and removes duplicates, if first element of list plus 4 equals the 5th
+            //element of the list, then we have a straight
+            for (int i = 0; i <= orderedByRank.Count - 5; i++)
+            {
+                if (orderedByRank[i] + 4 == orderedByRank[i + 4])
+                {
+                    return true;
+                }
+            }
+            //We have a special if-statement for a low straight since A=14 in my ranked int system
+            if (orderedByRank.Contains(14) && orderedByRank.Contains(2) &&
+                orderedByRank.Contains(3) && orderedByRank.Contains(4) &&
+                orderedByRank.Contains(5))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        //Created a method to check for straight flush so that above looks neater, more "methodical"
+        public bool IsStraightFlush(List<Card> hand)
+        {
+            //Grouping by suit, discarding groups with < 5 since a straight flush needs at least a flush first, 
+            //then converting to a list
+            var groupedBySuit = hand.GroupBy(card => card.Suit)
+                                    .Where(group => group.Count() >= 5)
+                                    .ToList();
+
+            //For each group in the list (should be one), if it passes the IsStraight test, then the hand is a straight flush
+            foreach (var group in groupedBySuit)
+            {
+                if (IsStraight(group.ToList()))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

@@ -41,9 +41,23 @@ namespace NoLimitTexasHoldem
             HandRank playerHandRank = handevaluator.EvaluateHand(playerHand);
             HandRank machineHandRank = handevaluator.EvaluateHand(machineHand);
 
-            // Output hand ranks
+            //Outputting hand ranks
             Console.WriteLine($"Player has {playerHandRank}");
             Console.WriteLine($"Machine has {machineHandRank}");
+            
+            //Since enums are assigned integers, and I implemented HandRank as an enum, these conditional statements work
+            if (playerHandRank > machineHandRank)
+            {
+                Console.WriteLine("You win!");
+            }
+            else if (machineHandRank > playerHandRank)
+            {
+                Console.WriteLine("Sorry, you lose...");
+            }
+            else
+            {
+                Console.WriteLine("Chop it up");
+            }
         }
     }
 }
