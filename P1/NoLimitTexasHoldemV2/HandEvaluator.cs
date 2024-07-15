@@ -4,7 +4,7 @@ namespace NoLimitTexasHoldemV2
 {
     public class HandEvaluator
     {
-        public HandRank EvaluateHand(List<Card> hand)
+        public HandRank EvaluateHand(List<Card> hand, out List<int> highCards)
         {
             //Groups by rank (Ace, queen, etc.), then puts in descending order by number of cards in each group, 
             //then puts groups in descending order by rank, then converts to a list
@@ -20,6 +20,9 @@ namespace NoLimitTexasHoldemV2
                                     .ToList();
             
             //For both above, end data type is List<IGrouping<int, Card>>
+
+            //Creating a list of high cards to help deal with tiebreakers
+            highCards = new List<int>();
 
             //Checking for straight flush
             if (IsStraightFlush(hand))
@@ -66,10 +69,22 @@ namespace NoLimitTexasHoldemV2
             //Checking for One Pair
             if (groupedByRank[0].Count() == 2)
             {
+                //Convert each card in 1st group to integer, then adds results to highCards list
+                highCards.AddRange(groupedByRank[0].Select(card => RankToInt(card.Rank)));
+                //Skip the pair that we already added, convert the remaining groups/cards into integers,
+                //flatten into one sequence, put into descending order, then add to highCards list
+                highCards.AddRange(groupedByRank.Skip(1)
+                         .SelectMany(group => group.Select(card => RankToInt(card.Rank)))
+                         .OrderByDescending(rank => rank));
                 return HandRank.OnePair;
             }
             
             //If we reach here, then must be high card
+            //Taking the cards grouped by rank, converting them to integers, then flattening them into one sequence, then
+            //putting them into descending order, then converting to a list
+            highCards = groupedByRank.SelectMany(group => group.Select(card => RankToInt(card.Rank)))
+                                     .OrderByDescending(rank => rank)
+                                     .ToList();
             return HandRank.HighCard;
 
             //Keep in mind don't use else if since return keyword exits the method anyway

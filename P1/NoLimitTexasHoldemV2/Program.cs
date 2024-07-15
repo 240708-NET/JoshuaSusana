@@ -11,6 +11,9 @@ namespace NoLimitTexasHoldemV2
             int machinestack = 10;
             int playerbet;
 
+            //Flag for tiebreakers
+            bool handOver = false;
+
             //Instantiating a new deck
             Deck deck = new Deck();
 
@@ -64,8 +67,8 @@ namespace NoLimitTexasHoldemV2
                 List<Card> machineHand = new List<Card> { machineCard1, machineCard2, communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 };
 
                 //Evaluating each player's hand
-                HandRank playerHandRank = handevaluator.EvaluateHand(playerHand);
-                HandRank machineHandRank = handevaluator.EvaluateHand(machineHand);
+                HandRank playerHandRank = handevaluator.EvaluateHand(playerHand, out List<int> playerHighCards);
+                HandRank machineHandRank = handevaluator.EvaluateHand(machineHand, out List<int> machineHighCards);
 
                 //Outputting machine's hole cards
                 Console.WriteLine($"Machine has {machineCard1} and {machineCard2}");
@@ -85,11 +88,37 @@ namespace NoLimitTexasHoldemV2
                     Console.WriteLine("Sorry, you lose the hand.");
                     machinestack += playerbet * 2;
                 }
+                //If both players have the same hand rank...
                 else
                 {
+                    //Iterate through player's list of high cards
+                    for (int i = 0; i < playerHighCards.Count; i++)
+                    {
+                        //If high cards determines tiebreaker, output to user the result, adjust stacks accordingly, 
+                        //set handOver flag, and break from loop
+                        if (playerHighCards[i] > machineHighCards[i])
+                        {
+                            Console.WriteLine("You win the hand!");
+                            playerstack += playerbet * 2;
+                            handOver = true;
+                            break;
+                        }
+                        if (playerHighCards[i] < machineHighCards[i])
+                        {
+                            Console.WriteLine("Sorry, you lose the hand.");
+                            machinestack += playerbet * 2;
+                            handOver = true;
+                            break;
+                        }
+                    }
+
+                    //If the hand really is a chop after looking at the high cards...
+                    if(!handOver)
+                    {
                     Console.WriteLine("Chop it up.");
                     playerstack += playerbet;
                     machinestack += playerbet;
+                    }
                 }
 
                 //If either player busts, the game is over
