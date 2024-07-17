@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;       //To be able to use lists
 
 namespace NoLimitTexasHoldemV2
 {
@@ -21,9 +21,9 @@ namespace NoLimitTexasHoldemV2
             HandEvaluator handevaluator = new HandEvaluator();
 
             while(true)
-            {
+            {   
                 //At start of every hand, clear window and output player stacks
-                Console.Clear();
+                Console.Write("\u001b[2J\u001b[H");
                 Console.WriteLine($"Player stack: {playerstack}");
                 Console.WriteLine($"Machine stack: {machinestack}");
                 

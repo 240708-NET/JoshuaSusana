@@ -1,10 +1,10 @@
-using System;                           //For the random class and lists
+using System;           //For the random class and lists
 
 namespace NoLimitTexasHoldemV2
 {
     public class Deck
     {
-        //Attributes of a deck include the cards and a random object to be able to shuffle
+        //Attributes of a deck include the cards and a random object linked to the deck to be able to shuffle
         private List<Card> cards;
         private Random random;
 
@@ -50,7 +50,7 @@ namespace NoLimitTexasHoldemV2
                 cards[i] = cards[j];
                 cards[j] = temp;
 
-                //This uses the Fisher-Yates Shuffle, one of the first things that came up for me in my online lookups
+                //This uses the Fisher-Yates Shuffle, one of the first things that came up for me in my online research
             }
         }
 

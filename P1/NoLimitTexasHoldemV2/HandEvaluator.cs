@@ -25,70 +25,115 @@ namespace NoLimitTexasHoldemV2
             highCards = new List<int>();
 
             //Checking for straight flush
-            if (IsStraightFlush(hand))
+            if (IsStraightFlush(hand, out var straightFlushHighCards))
             {
+                //Take 5 cards from what comes out of IsStraightFlush method
+                highCards = straightFlushHighCards.Take(5).ToList();
+
                 return HandRank.StraightFlush;
             }
 
             //Checking for Quads
             if (groupedByRank[0].Count() == 4)
             {
+                //Taking the cards grouped by rank, adding the first group which is quads, then adding the second
+                //group which is a single card
+                highCards.AddRange(groupedByRank[0].Select(card => RankToInt(card.Rank)));
+                highCards.AddRange(groupedByRank[1].Select(card => RankToInt(card.Rank)));
                 return HandRank.Quads;
             }
 
             //Checking for Full House
             if (groupedByRank[0].Count() == 3 && groupedByRank[1].Count() == 2)
             {
+                //Taking the cards grouped by rank, adding the first group which is trips, then adding the second
+                //group which is a pair
+                highCards.AddRange(groupedByRank[0].Select(card => RankToInt(card.Rank)));
+                highCards.AddRange(groupedByRank[1].Select(card => RankToInt(card.Rank)));
                 return HandRank.FullHouse;
             }
 
             //Checking for Flush
             if (groupedBySuit[0].Count() >= 5)
             {
+                //Taking the cards grouped by suit, converting them to integers, put in descending order,
+                //making sure we only take 5, then converting to list
+                highCards = groupedBySuit[0].Select(card => RankToInt(card.Rank))
+                                            .OrderByDescending(rank => rank)
+                                            .Take(5)
+                                            .ToList();
                 return HandRank.Flush;
             }
             
             //Checking for Straight
-            if (IsStraight(hand))
-            {
+            if (IsStraight(hand, out var straightHighCards))
+            { 
+                //Take 5 cards from what comes out of IsStraight method
+                highCards = straightHighCards.Take(5).ToList();
+
                 return HandRank.Straight;
             }
 
             //Checking for Trips
             if (groupedByRank[0].Count() == 3)
             {
+                //Convert each card in 1st group to integer, then adds results to highCards list
+                highCards.AddRange(groupedByRank[0].Select(card => RankToInt(card.Rank)));
+                //Skip the group that we already added, convert the remaining groups/cards into integers,
+                //flatten into one sequence, put into descending order, make sure we only take 2 cards,
+                //then add to highCards list
+                highCards.AddRange(groupedByRank.Skip(1)
+                         .SelectMany(group => group.Select(card => RankToInt(card.Rank)))
+                         .OrderByDescending(rank => rank)
+                         .Take(2));
+                         
                 return HandRank.Trips;
             }
 
             //Checking for Two Pair
             if (groupedByRank[0].Count() == 2 && groupedByRank[1].Count() == 2)
             {
+                //Convert each card in each group to integer, than add to highCards list. Already in order since
+                //grouped by rank
+                highCards.AddRange(groupedByRank[0].Select(card => RankToInt(card.Rank)));
+                highCards.AddRange(groupedByRank[1].Select(card => RankToInt(card.Rank)));
+                //Skip the 2 pairs we already added, convert to integer, flatten into one sequence, put in descending order,
+                //then make sure we only take one
+                highCards.AddRange(groupedByRank.Skip(2)
+                                    .SelectMany(group => group.Select(card => RankToInt(card.Rank)))
+                                    .OrderByDescending(rank => rank)
+                                    .Take(1));
                 return HandRank.TwoPair;
             }
             
             //Checking for One Pair
             if (groupedByRank[0].Count() == 2)
             {
-                //Convert each card in 1st group to integer, then adds results to highCards list
+                //Convert each card in 1st group (the pair) to integer, then adds results to highCards list
                 highCards.AddRange(groupedByRank[0].Select(card => RankToInt(card.Rank)));
                 //Skip the pair that we already added, convert the remaining groups/cards into integers,
-                //flatten into one sequence, put into descending order, then add to highCards list
+                //flatten into one sequence, put into descending order, make sure we only take 3 cards total,
+                //then add to highCards list
                 highCards.AddRange(groupedByRank.Skip(1)
-                         .SelectMany(group => group.Select(card => RankToInt(card.Rank)))
-                         .OrderByDescending(rank => rank));
+                                                .SelectMany(group => group.Select(card => RankToInt(card.Rank)))
+                                                .OrderByDescending(rank => rank)
+                                                .Take(3));
                 return HandRank.OnePair;
             }
             
             //If we reach here, then must be high card
             //Taking the cards grouped by rank, converting them to integers, then flattening them into one sequence, then
-            //putting them into descending order, then converting to a list
+            //putting them into descending order, making sure we only take 5 cards total (since only 5 best cards), 
+            //then converting to a list
             highCards = groupedByRank.SelectMany(group => group.Select(card => RankToInt(card.Rank)))
                                      .OrderByDescending(rank => rank)
+                                     .Take(5)
                                      .ToList();
             return HandRank.HighCard;
 
             //Keep in mind don't use else if since return keyword exits the method anyway
         }
+
         //Method to convert card rankings to an int system
         public int RankToInt(string rank)
         {
@@ -109,9 +154,11 @@ namespace NoLimitTexasHoldemV2
         }
 
         //Created a method to check for straight so that above looks neater, more "methodical"
-        public bool IsStraight(List<Card> hand)
+        public bool IsStraight(List<Card> hand, out List<int> highCards)
         {
-            //Transforms each card object into just the rank attribute, then removes duplicates, then converts to int, 
+            highCards = new List<int>();
+            
+            //Transforms each card object into just the rank attribute, removes duplicates, converts to int, 
             //then sorts in ascending order, then converts to a lsit
             var orderedByRank = hand.Select(card => card.Rank)
                                    .Distinct()
@@ -125,6 +172,9 @@ namespace NoLimitTexasHoldemV2
             {
                 if (orderedByRank[i] + 4 == orderedByRank[i + 4])
                 {
+                    //Using Skip(i) and Take(5) to make sure we only take cards from straight into highCards
+                    highCards.AddRange(orderedByRank.Skip(i).Take(5));
+
                     return true;
                 }
             }
@@ -133,14 +183,17 @@ namespace NoLimitTexasHoldemV2
                 orderedByRank.Contains(3) && orderedByRank.Contains(4) &&
                 orderedByRank.Contains(5))
             {
+                highCards.AddRange(new List<int> { 5, 4, 3, 2, 14 });
                 return true;
             }
             return false;
         }
 
         //Created a method to check for straight flush so that above looks neater, more "methodical"
-        public bool IsStraightFlush(List<Card> hand)
+        public bool IsStraightFlush(List<Card> hand, out List<int> highCards)
         {
+            highCards = new List<int>();
+            
             //Grouping by suit, discarding groups with < 5 since a straight flush needs at least a flush first, 
             //then converting to a list
             var groupedBySuit = hand.GroupBy(card => card.Suit)
@@ -150,8 +203,10 @@ namespace NoLimitTexasHoldemV2
             //For each group in the list, if it passes the IsStraight test, then the hand is a straight flush
             foreach (var group in groupedBySuit)
             {
-                if (IsStraight(group.ToList()))
+                if (IsStraight(group.ToList(), out var straightFlushHighCards))
                 {
+                    //Take 5 cards from what comes out of IsStraight method
+                    highCards = straightFlushHighCards.Take(5).ToList();
                     return true;
                 }
             }
