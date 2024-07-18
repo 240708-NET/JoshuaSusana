@@ -1,5 +1,3 @@
-using System;       //To be able to use lists, GroupBy, and throw exceptions
-
 namespace NoLimitTexasHoldemV2
 {
     public class HandEvaluator

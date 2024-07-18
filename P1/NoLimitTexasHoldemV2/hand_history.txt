@@ -1,0 +1,96 @@
+Date and Time: 7/17/2024 8:48:52 PM
+Player's Initial Stack: 10
+Machine's Initial Stack: 10
+Bet: 1
+Player Hole Cards: 2 of Clubs, 4 of Clubs
+Machine Hole Cards: 9 of Diamonds, A of Clubs
+Community Cards: 5 of Hearts, K of Diamonds, 3 of Spades, 3 of Diamonds, 8 of Diamonds
+Player Hand Rank: OnePair
+Machine Hand Rank: OnePair
+Outcome: Machine wins the hand.
+
+---------------------------------------------------------------------------
+Date and Time: 7/17/2024 8:49:02 PM
+Player's Initial Stack: 9
+Machine's Initial Stack: 11
+Bet: 9
+Player Hole Cards: 8 of Spades, 8 of Clubs
+Machine Hole Cards: Q of Hearts, A of Clubs
+Community Cards: 5 of Clubs, 5 of Spades, 7 of Clubs, 4 of Diamonds, 3 of Clubs
+Player Hand Rank: TwoPair
+Machine Hand Rank: OnePair
+Outcome: Player wins the hand!
+
+---------------------------------------------------------------------------
+Date and Time: 7/17/2024 8:49:09 PM
+Player's Initial Stack: 18
+Machine's Initial Stack: 2
+Bet: 1
+Player Hole Cards: A of Diamonds, 3 of Diamonds
+Machine Hole Cards: 4 of Diamonds, 9 of Hearts
+Community Cards: Q of Clubs, K of Diamonds, 2 of Clubs, 9 of Diamonds, 8 of Clubs
+Player Hand Rank: HighCard
+Machine Hand Rank: OnePair
+Outcome: Machine wins the hand.
+
+---------------------------------------------------------------------------
+Date and Time: 7/17/2024 8:49:17 PM
+Player's Initial Stack: 17
+Machine's Initial Stack: 3
+Bet: 3
+Player Hole Cards: A of Clubs, K of Clubs
+Machine Hole Cards: J of Clubs, Q of Diamonds
+Community Cards: 5 of Hearts, 2 of Clubs, Q of Hearts, 10 of Clubs, 10 of Diamonds
+Player Hand Rank: OnePair
+Machine Hand Rank: TwoPair
+Outcome: Machine wins the hand.
+
+---------------------------------------------------------------------------
+Date and Time: 7/17/2024 8:49:24 PM
+Player's Initial Stack: 14
+Machine's Initial Stack: 6
+Bet: 1
+Player Hole Cards: J of Clubs, 4 of Diamonds
+Machine Hole Cards: 7 of Hearts, J of Hearts
+Community Cards: 5 of Clubs, A of Clubs, 9 of Diamonds, 2 of Diamonds, A of Diamonds
+Player Hand Rank: OnePair
+Machine Hand Rank: OnePair
+Outcome: Machine wins the hand.
+
+---------------------------------------------------------------------------
+Date and Time: 7/17/2024 8:49:35 PM
+Player's Initial Stack: 13
+Machine's Initial Stack: 7
+Bet: 7
+Player Hole Cards: A of Spades, Q of Hearts
+Machine Hole Cards: 10 of Clubs, 7 of Spades
+Community Cards: 7 of Clubs, 9 of Spades, 8 of Spades, 9 of Clubs, 6 of Diamonds
+Player Hand Rank: OnePair
+Machine Hand Rank: Straight
+Outcome: Machine wins the hand.
+
+---------------------------------------------------------------------------
+Date and Time: 7/17/2024 8:49:44 PM
+Player's Initial Stack: 6
+Machine's Initial Stack: 14
+Bet: 6
+Player Hole Cards: 9 of Hearts, 10 of Diamonds
+Machine Hole Cards: 5 of Diamonds, 10 of Spades
+Community Cards: 5 of Hearts, 6 of Hearts, 8 of Clubs, 10 of Clubs, 6 of Spades
+Player Hand Rank: TwoPair
+Machine Hand Rank: TwoPair
+Outcome: Player wins the hand!
+
+---------------------------------------------------------------------------
+Date and Time: 7/17/2024 8:49:55 PM
+Player's Initial Stack: 12
+Machine's Initial Stack: 8
+Bet: 8
+Player Hole Cards: J of Spades, 4 of Spades
+Machine Hole Cards: K of Clubs, A of Spades
+Community Cards: 6 of Hearts, J of Hearts, 7 of Spades, 8 of Hearts, 5 of Diamonds
+Player Hand Rank: Straight
+Machine Hand Rank: HighCard
+Outcome: Player wins the hand!
+
+---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿using System;       //To be able to use lists
+﻿using NoLimitTexasHoldemV2.Data;        //To be able to use Repository pattern
 
 namespace NoLimitTexasHoldemV2
 {
@@ -6,6 +6,9 @@ namespace NoLimitTexasHoldemV2
     {
         static void Main(string[] args)
         {
+            //Creating a HandRepository boject
+            IHandRepository handRepository = new HandRepository("hand_history.txt");
+            
             //Declaring and initializing all player stacks
             int playerstack = 10;
             int machinestack = 10;
@@ -22,11 +25,15 @@ namespace NoLimitTexasHoldemV2
 
             while(true)
             {   
+                // Save initial stacks before the hand starts
+                int initialPlayerStack = playerstack;
+                int initialMachineStack = machinestack;
+                
                 //At start of every hand, clear window and output player stacks
                 Console.Write("\u001b[2J\u001b[H");
                 Console.WriteLine($"Player stack: {playerstack}");
                 Console.WriteLine($"Machine stack: {machinestack}");
-                
+
                 //Initialize and shuffle deck at start of each hand
                 deck.InitializeDeck();
                 deck.Shuffle();
@@ -78,14 +85,17 @@ namespace NoLimitTexasHoldemV2
                 Console.WriteLine($"Machine has {machineHandRank}");
             
                 //Since enums are assigned integers, and I implemented HandRank as an enum, these conditional statements work
+                string outcome = "";
                 if (playerHandRank > machineHandRank)
                 {
-                    Console.WriteLine("You win the hand!");
+                    outcome = "Player wins the hand!";
+                    Console.WriteLine(outcome);
                     playerstack += playerbet * 2;
                 }
                 else if (machineHandRank > playerHandRank)
                 {
-                    Console.WriteLine("Sorry, you lose the hand.");
+                    outcome = "Machine wins the hand.";
+                    Console.WriteLine(outcome);
                     machinestack += playerbet * 2;
                 }
                 //If both players have the same hand rank...
@@ -98,14 +108,16 @@ namespace NoLimitTexasHoldemV2
                         //set handOver flag, and break from loop
                         if (playerHighCards[i] > machineHighCards[i])
                         {
-                            Console.WriteLine("You win the hand!");
+                            outcome = "Player wins the hand!";
+                            Console.WriteLine(outcome);
                             playerstack += playerbet * 2;
                             handOver = true;
                             break;
                         }
                         if (playerHighCards[i] < machineHighCards[i])
                         {
-                            Console.WriteLine("Sorry, you lose the hand.");
+                            outcome = "Machine wins the hand.";
+                            Console.WriteLine(outcome);
                             machinestack += playerbet * 2;
                             handOver = true;
                             break;
@@ -115,11 +127,30 @@ namespace NoLimitTexasHoldemV2
                     //If the hand really is a chop after looking at the high cards...
                     if(!handOver)
                     {
-                    Console.WriteLine("Chop it up.");
+                    outcome = "Chop it up.";
+                    Console.WriteLine(outcome);
                     playerstack += playerbet;
                     machinestack += playerbet;
                     }
                 }
+
+                //Creating a handData object for each hand
+                HandData handData = new HandData
+                {
+                    HandDateTime = DateTime.Now,
+                    PlayerInitialStack = initialPlayerStack,
+                    MachineInitialStack = initialMachineStack,
+                    Bet = playerbet,
+                    PlayerHoleCards = new List<Card> { playerCard1, playerCard2 },
+                    MachineHoleCards = new List<Card> { machineCard1, machineCard2 },
+                    CommunityCards = new List<Card> { communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 },
+                    PlayerHandRank = playerHandRank,
+                    MachineHandRank = machineHandRank,
+                    Outcome = outcome
+                };
+
+                //Saving that hand into the text file
+                handRepository.SaveHandData(handData);
 
                 //If either player busts, the game is over
                 if (playerstack <= 0)

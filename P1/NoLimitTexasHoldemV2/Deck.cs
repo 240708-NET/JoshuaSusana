@@ -1,5 +1,3 @@
-using System;           //For the random class and lists
-
 namespace NoLimitTexasHoldemV2
 {
     public class Deck
