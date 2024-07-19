@@ -1,4 +1,6 @@
-namespace NoLimitTexasHoldemV2.Data
+using NoLimitTexasHoldemV2.Enums;       //To use HandRank.cs
+
+namespace NoLimitTexasHoldemV2.Models
 {
     //Created a class that has all the attributes/information involving a hand
     public class HandData

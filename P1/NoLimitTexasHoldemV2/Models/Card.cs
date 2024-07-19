@@ -1,4 +1,4 @@
-namespace NoLimitTexasHoldemV2
+namespace NoLimitTexasHoldemV2.Models
 {
     public class Card
     {

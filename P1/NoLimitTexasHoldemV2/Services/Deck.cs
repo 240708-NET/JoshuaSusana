@@ -1,4 +1,6 @@
-namespace NoLimitTexasHoldemV2
+using NoLimitTexasHoldemV2.Models;      //To use Card.cs
+
+namespace NoLimitTexasHoldemV2.Services
 {
     public class Deck
     {

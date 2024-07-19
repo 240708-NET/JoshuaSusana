@@ -1,4 +1,7 @@
-namespace NoLimitTexasHoldemV2
+using NoLimitTexasHoldemV2.Enums;       //For HandRank.cs
+using NoLimitTexasHoldemV2.Models;      //For Card.cs
+
+namespace NoLimitTexasHoldemV2.Services
 {
     public class HandEvaluator
     {

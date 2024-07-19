@@ -1,4 +1,7 @@
-﻿using NoLimitTexasHoldemV2.Data;        //To be able to use Repository pattern
+﻿using NoLimitTexasHoldemV2.Data;        //To use HandRepository.cs
+using NoLimitTexasHoldemV2.Enums;       //To use HandRank.cs
+using NoLimitTexasHoldemV2.Models;      //To use Card.cs and HandData.cs
+using NoLimitTexasHoldemV2.Services;    //To use Deck.cs and HandEvaluator.cs
 
 namespace NoLimitTexasHoldemV2
 {
@@ -6,33 +9,99 @@ namespace NoLimitTexasHoldemV2
     {
         static void Main(string[] args)
         {
-            //Creating a HandRepository boject
+            //Creating a HandRepository object
             IHandRepository handRepository = new HandRepository("hand_history.txt");
-            
-            //Declaring and initializing all player stacks
-            int playerstack = 10;
-            int machinestack = 10;
-            int playerbet;
-
-            //Flag for tiebreakers
-            bool handOver = false;
 
             //Instantiating a new deck
             Deck deck = new Deck();
 
             //Instantiating a HandEvaluator object
-            HandEvaluator handevaluator = new HandEvaluator();
+            HandEvaluator handEvaluator = new HandEvaluator();
 
-            while(true)
-            {   
-                // Save initial stacks before the hand starts
-                int initialPlayerStack = playerstack;
-                int initialMachineStack = machinestack;
-                
-                //At start of every hand, clear window and output player stacks
+            while (true)
+            {
+                //Clear window, then give options
                 Console.Write("\u001b[2J\u001b[H");
-                Console.WriteLine($"Player stack: {playerstack}");
-                Console.WriteLine($"Machine stack: {machinestack}");
+                Console.WriteLine("No Limit Texas Hold'em\n");
+                Console.WriteLine("Select an option: ");
+                Console.WriteLine("1. View Hand History");
+                Console.WriteLine("2. Delete Hand History");
+                Console.WriteLine("3. Play");
+                Console.WriteLine("4. Exit");
+
+                string input = Console.ReadLine();
+                
+                if (input == "1")
+                {
+                    ViewHandHistory(handRepository);
+                }
+                else if (input == "2")
+                {
+                    DeleteHandHistory(handRepository);
+                }
+                else if (input == "3")
+                {
+                    PlayGame(handRepository, deck, handEvaluator);
+                }
+                else if (input == "4")
+                {
+                    return;
+                }     
+                else
+                {
+                    Console.WriteLine("Invalid option. Please try again.");
+                }
+            }
+        }
+
+        static void ViewHandHistory(IHandRepository handRepository)
+        {
+            //Clear window, show hand history
+            Console.Write("\u001b[2J\u001b[H");
+            handRepository.ReadHandHistory();
+            Console.WriteLine("Press Enter to return to the main menu...");
+            Console.ReadLine();
+        }
+
+        static void DeleteHandHistory(IHandRepository handRepository)
+        {
+            //Clear window, ask if sure, then perform actions and/or output to console accordingly
+            Console.Write("\u001b[2J\u001b[H");
+            Console.WriteLine("Are you sure you want to delete all hand history? (y/n)");
+            string inputDeleteHistory = Console.ReadLine();
+            if (inputDeleteHistory.ToLower() == "y")
+            {
+                handRepository.DeleteAllHandHistory();
+                Console.WriteLine("Hand history deleted.");
+            }
+            else
+            {
+                Console.WriteLine("Hand history not deleted.");
+            }
+            Console.WriteLine("Press Enter to return to the main menu...");
+            Console.ReadLine();
+        }
+
+        static void PlayGame(IHandRepository handRepository, Deck deck, HandEvaluator handEvaluator)
+        {
+            //Declaring and initializing all player stacks
+            int playerStack = 10;
+            int machineStack = 10;
+            int playerBet;
+
+            //Flag for tiebreakers
+            bool handOver = false;
+
+            while (true)
+            {
+                //Save initial stacks before the hand starts
+                int initialPlayerStack = playerStack;
+                int initialMachineStack = machineStack;
+
+                //At start of every hand, clear window and output player stacks
+                Console.Clear();
+                Console.WriteLine($"Player stack: {playerStack}");
+                Console.WriteLine($"Machine stack: {machineStack}");
 
                 //Initialize and shuffle deck at start of each hand
                 deck.InitializeDeck();
@@ -61,21 +130,21 @@ namespace NoLimitTexasHoldemV2
 
                 Console.WriteLine("Enter your bet (at least 1, whole numbers only):");
                 //While loop is input validation
-                while (!int.TryParse(Console.ReadLine(), out playerbet) || playerbet < 1 || playerbet > playerstack)
+                while (!int.TryParse(Console.ReadLine(), out playerBet) || playerBet < 1 || playerBet > playerStack)
                 {
                     Console.WriteLine("Invalid bet. Enter a value between 1 and your current stack.");
                 }
 
-                playerstack -= playerbet;
-                machinestack -= playerbet;
-                
+                playerStack -= playerBet;
+                machineStack -= playerBet;
+
                 //Combining hole cards with community cards for both players
                 List<Card> playerHand = new List<Card> { playerCard1, playerCard2, communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 };
                 List<Card> machineHand = new List<Card> { machineCard1, machineCard2, communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 };
 
                 //Evaluating each player's hand
-                HandRank playerHandRank = handevaluator.EvaluateHand(playerHand, out List<int> playerHighCards);
-                HandRank machineHandRank = handevaluator.EvaluateHand(machineHand, out List<int> machineHighCards);
+                HandRank playerHandRank = handEvaluator.EvaluateHand(playerHand, out List<int> playerHighCards);
+                HandRank machineHandRank = handEvaluator.EvaluateHand(machineHand, out List<int> machineHighCards);
 
                 //Outputting machine's hole cards
                 Console.WriteLine($"Machine has {machineCard1} and {machineCard2}");
@@ -83,20 +152,20 @@ namespace NoLimitTexasHoldemV2
                 //Outputting hand ranks
                 Console.WriteLine($"Player has {playerHandRank}");
                 Console.WriteLine($"Machine has {machineHandRank}");
-            
+
                 //Since enums are assigned integers, and I implemented HandRank as an enum, these conditional statements work
                 string outcome = "";
                 if (playerHandRank > machineHandRank)
                 {
                     outcome = "Player wins the hand!";
                     Console.WriteLine(outcome);
-                    playerstack += playerbet * 2;
+                    playerStack += playerBet * 2;
                 }
                 else if (machineHandRank > playerHandRank)
                 {
                     outcome = "Machine wins the hand.";
                     Console.WriteLine(outcome);
-                    machinestack += playerbet * 2;
+                    machineStack += playerBet * 2;
                 }
                 //If both players have the same hand rank...
                 else
@@ -110,7 +179,7 @@ namespace NoLimitTexasHoldemV2
                         {
                             outcome = "Player wins the hand!";
                             Console.WriteLine(outcome);
-                            playerstack += playerbet * 2;
+                            playerStack += playerBet * 2;
                             handOver = true;
                             break;
                         }
@@ -118,19 +187,19 @@ namespace NoLimitTexasHoldemV2
                         {
                             outcome = "Machine wins the hand.";
                             Console.WriteLine(outcome);
-                            machinestack += playerbet * 2;
+                            machineStack += playerBet * 2;
                             handOver = true;
                             break;
                         }
                     }
 
                     //If the hand really is a chop after looking at the high cards...
-                    if(!handOver)
+                    if (!handOver)
                     {
-                    outcome = "Chop it up.";
-                    Console.WriteLine(outcome);
-                    playerstack += playerbet;
-                    machinestack += playerbet;
+                        outcome = "Chop it up.";
+                        Console.WriteLine(outcome);
+                        playerStack += playerBet;
+                        machineStack += playerBet;
                     }
                 }
 
@@ -140,7 +209,7 @@ namespace NoLimitTexasHoldemV2
                     HandDateTime = DateTime.Now,
                     PlayerInitialStack = initialPlayerStack,
                     MachineInitialStack = initialMachineStack,
-                    Bet = playerbet,
+                    Bet = playerBet,
                     PlayerHoleCards = new List<Card> { playerCard1, playerCard2 },
                     MachineHoleCards = new List<Card> { machineCard1, machineCard2 },
                     CommunityCards = new List<Card> { communityCard1, communityCard2, communityCard3, communityCard4, communityCard5 },
@@ -153,14 +222,18 @@ namespace NoLimitTexasHoldemV2
                 handRepository.SaveHandData(handData);
 
                 //If either player busts, the game is over
-                if (playerstack <= 0)
+                if (playerStack <= 0)
                 {
                     Console.WriteLine("You busted! Game over.");
+                    Console.WriteLine("Press Enter to return to the main menu...");
+                    Console.ReadLine();
                     break;
                 }
-                if (machinestack <= 0)
+                if (machineStack <= 0)
                 {
                     Console.WriteLine("Machine busted! You win!!!");
+                    Console.WriteLine("Press Enter to return to the main menu...");
+                    Console.ReadLine();
                     break;
                 }
 
