@@ -1,7 +1,8 @@
-﻿using NoLimitTexasHoldemV2.Data;        //To use HandRepository.cs
-using NoLimitTexasHoldemV2.Enums;       //To use HandRank.cs
-using NoLimitTexasHoldemV2.Models;      //To use Card.cs and HandData.cs
-using NoLimitTexasHoldemV2.Services;    //To use Deck.cs and HandEvaluator.cs
+﻿using NoLimitTexasHoldemV2.Data;                //To use HandRepository.cs
+using NoLimitTexasHoldemV2.Enums;               //To use HandRank.cs
+using NoLimitTexasHoldemV2.Models;              //To use Card.cs and HandData.cs
+using NoLimitTexasHoldemV2.Services;            //To use Deck.cs and HandEvaluator.cs
+using Microsoft.Extensions.Configuration;       //To use ConfigurationBuilder()
 
 namespace NoLimitTexasHoldemV2
 {
@@ -9,8 +10,19 @@ namespace NoLimitTexasHoldemV2
     {
         static void Main(string[] args)
         {
+            string connectionstring = "";
+
+            //Create a ConfigurationBuilder object, add user secrets for the connection string,
+            //then build
+            var configuration = new ConfigurationBuilder()
+                .AddUserSecrets<Program>()
+                .Build();
+                
+            connectionstring = configuration.GetConnectionString("PokerDatabaseConnection");
+            IHandRepository file = new HandRepository(connectionstring, 2);
+            
             //Creating a HandRepository object
-            IHandRepository handRepository = new HandRepository("hand_history.txt");
+            IHandRepository handRepository = new HandRepository("hand_history.txt", 1);
 
             //Instantiating a new deck
             Deck deck = new Deck();
@@ -58,7 +70,8 @@ namespace NoLimitTexasHoldemV2
         {
             //Clear window, show hand history
             Console.Write("\u001b[2J\u001b[H");
-            handRepository.ReadHandHistory();
+            handRepository.ReadHandHistoryRepository();
+            handRepository.ReadHandHistoryDB();
             Console.WriteLine("Press Enter to return to the main menu...");
             Console.ReadLine();
         }
@@ -99,7 +112,7 @@ namespace NoLimitTexasHoldemV2
                 int initialMachineStack = machineStack;
 
                 //At start of every hand, clear window and output player stacks
-                Console.Clear();
+                Console.Write("\u001b[2J\u001b[H");
                 Console.WriteLine($"Player stack: {playerStack}");
                 Console.WriteLine($"Machine stack: {machineStack}");
 

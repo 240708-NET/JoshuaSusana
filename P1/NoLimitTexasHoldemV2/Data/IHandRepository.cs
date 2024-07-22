@@ -4,10 +4,14 @@ namespace NoLimitTexasHoldemV2.Data
 {
     public interface IHandRepository
     {
-        //Contract includes Create, Read, and Delete rules
-        //Not sure yet how to implement Update in a way that feels practical
+        //Create rule
         void SaveHandData(HandData handData);
-        void ReadHandHistory();
+        //Read rules. One for the Repository Pattern, one for Entity Framework
+
+        void ReadHandHistoryRepository();
+        void ReadHandHistoryDB();
+
+        //Delete rule
         void DeleteAllHandHistory();
     }
 }
