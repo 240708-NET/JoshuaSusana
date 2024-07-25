@@ -1,5 +1,6 @@
 using NoLimitTexasHoldemV2.Models;      //To use HandData.cs
 using Microsoft.EntityFrameworkCore;    //To use things like DbContext
+using System.Text.Json;
 
 namespace NoLimitTexasHoldemV2.Data
 {
@@ -38,14 +39,17 @@ namespace NoLimitTexasHoldemV2.Data
 
         public void SaveHandData(HandData handData)
         {
-            //using keyword will automatically close the file and release any resources
-            //true parameter opens file in append mode
-            //I just separated each hand with a line of hyphens
-            using (StreamWriter writer = new StreamWriter(_path, true))
+            List<HandData> handDataList = new List<HandData>();
+            if (File.Exists(_path))
             {
-                writer.WriteLine(handData.ToString());
-                writer.WriteLine(new string('-', 75));
+                var existingData = File.ReadAllText(_path);
+                handDataList = JsonSerializer.Deserialize<List<HandData>>(existingData);
             }
+
+            handDataList.Add(handData);
+
+            var jsonData = JsonSerializer.Serialize(handDataList, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_path, jsonData);
 
             //Entity framework version, simply add to context then save to database
             context.Hands.Add(handData);
@@ -60,21 +64,35 @@ namespace NoLimitTexasHoldemV2.Data
                 Console.WriteLine("Hand history file does not exist or could not be found.");
                 return;
             }
+            
+            //Read the JSON data from the file
+            var jsonData = File.ReadAllText(_path);
+            var handDataList = JsonSerializer.Deserialize<List<HandData>>(jsonData);
 
-            //Read all lines from the file
-            List<string> allLines = File.ReadAllLines(_path).ToList();
-
-            //If text file is empty...
-            if (allLines.Count == 0)
+            //Check if deserialization returned null
+            if (handDataList == null || handDataList.Count == 0)
             {
                 Console.WriteLine("No hand history found.");
                 return;
-            }
-            
-            //Outputting to console
-            foreach (string line in allLines)
+            }   
+
+            // Print each hand's details to the console
+            foreach (var handData in handDataList)
             {
-                Console.WriteLine(line);
+                Console.WriteLine($"Date and Time: {handData.HandDateTime}");
+                Console.WriteLine($"Player's Initial Stack: {handData.PlayerInitialStack}");
+                Console.WriteLine($"Machine's Initial Stack: {handData.MachineInitialStack}");
+                Console.WriteLine($"Bet: {handData.Bet}");
+
+                Console.WriteLine("Player Hole Cards: " + string.Join(", ", handData.PlayerHoleCards.Select(card => $"{card.Rank} of {card.Suit}")));
+                Console.WriteLine("Machine Hole Cards: " + string.Join(", ", handData.MachineHoleCards.Select(card => $"{card.Rank} of {card.Suit}")));
+                Console.WriteLine("Community Cards: " + string.Join(", ", handData.CommunityCards.Select(card => $"{card.Rank} of {card.Suit}")));
+
+
+                Console.WriteLine($"Player Hand Rank: {handData.PlayerHandRank}");
+                Console.WriteLine($"Machine Hand Rank: {handData.MachineHandRank}");
+                Console.WriteLine($"Outcome: {handData.Outcome}");
+                Console.WriteLine("-------------------------------------------------");
             }
         }
 
@@ -100,8 +118,8 @@ namespace NoLimitTexasHoldemV2.Data
 
         public void DeleteAllHandHistory()
         {
-            //Clear the file by writing an empty string into it
-            File.WriteAllText(_path, string.Empty);
+            // Clear the JSON file by writing an empty array
+            File.WriteAllText(_path, "[]");
 
             //Get all HandData records, convert to list, remove records from context, then save to DB
             List<HandData> hands = context.Hands.ToList();

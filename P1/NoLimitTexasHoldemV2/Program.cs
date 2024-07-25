@@ -22,7 +22,7 @@ namespace NoLimitTexasHoldemV2
             IHandRepository file = new HandRepository(connectionstring, 2);
             
             //Creating a HandRepository object
-            IHandRepository handRepository = new HandRepository("hand_history.txt", 1);
+            IHandRepository handRepository = new HandRepository("hand_history.json", 1);
 
             //Instantiating a new deck
             Deck deck = new Deck();
