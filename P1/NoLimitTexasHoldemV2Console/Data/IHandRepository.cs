@@ -9,7 +9,7 @@ namespace NoLimitTexasHoldemV2.Data
         //Read rules. One for the Repository Pattern, one for Entity Framework
 
         void ReadHandHistoryRepository();
-        void ReadHandHistoryDB();
+        IEnumerable<HandData> ReadHandHistoryDB();
 
         //Delete rule
         void DeleteAllHandHistory();

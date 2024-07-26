@@ -1,3 +1,5 @@
+- The player shall be able to view their hand history.
+- The player shall be able to delete their hand history.
 - The player and machine should both be dealt 2 hole cards.
 - The player should be able to see the 5 community cards dealt.
 - The program should tell the player what hand the player and machine have (full house, royal flush, etc).
@@ -6,3 +8,4 @@
 - The player will bet their hand, with the machine always calling
 - The player and machine's stack sizes will change based on who wins the pot
 - The game will end when either the player or machine busts
+- The game shall give a start menu with options of viewing hand history, deleting hand history, playing, and exiting.

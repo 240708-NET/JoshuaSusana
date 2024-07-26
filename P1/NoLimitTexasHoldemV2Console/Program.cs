@@ -3,17 +3,22 @@ using NoLimitTexasHoldemV2.Enums;               //To use HandRank.cs
 using NoLimitTexasHoldemV2.Models;              //To use Card.cs and HandData.cs
 using NoLimitTexasHoldemV2.Services;            //To use Deck.cs and HandEvaluator.cs
 using Microsoft.Extensions.Configuration;       //To use ConfigurationBuilder()
+using System.Text.Json;                         //To use JsonSerializer
+using System.Text.Json.Serialization;           //Tp use JsonSerializerOptions and ReferenceHandler
+
 
 namespace NoLimitTexasHoldemV2
 {
     class Program
     {
+        //Creating object for sending HTTP requests and receiving HTTP responses
+        static HttpClient client = new HttpClient {BaseAddress = new Uri("http://localhost:5271/")};
+        
         static void Main(string[] args)
         {
             string connectionstring = "";
 
-            //Create a ConfigurationBuilder object, add user secrets for the connection string,
-            //then build
+            //Create a ConfigurationBuilder object, add user secrets for the connection string, the build
             var configuration = new ConfigurationBuilder()
                 .AddUserSecrets<Program>()
                 .Build();
@@ -72,6 +77,7 @@ namespace NoLimitTexasHoldemV2
             Console.Write("\u001b[2J\u001b[H");
             handRepository.ReadHandHistoryRepository();
             handRepository.ReadHandHistoryDB();
+            ViewHandHistoryAPI().Wait();
             Console.WriteLine("Press Enter to return to the main menu...");
             Console.ReadLine();
         }
@@ -255,5 +261,56 @@ namespace NoLimitTexasHoldemV2
                 Console.ReadLine();
             }
         }
+
+        static async Task ViewHandHistoryAPI()
+        {
+            //Creating a client handler object
+            HttpClientHandler handler = new HttpClientHandler
+            {
+                //Bypassing SSL certificate validation just to get started
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
+            //Using client handler to bypass SSL (passing handler to constructor)
+            using HttpClient client = new HttpClient(handler)
+            {
+                BaseAddress = new Uri("http://localhost:5271")
+            };
+
+            try
+            {
+                //Store response from GET request
+                HttpResponseMessage response = await client.GetAsync("Hand");
+
+                //This method will throw an exception if response status code indicates an error
+                response.EnsureSuccessStatusCode();
+
+                //Store then output response
+                string responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Response JSON:");
+                Console.WriteLine(responseContent);
+
+                //Configuring how json will be deserialized
+                JsonSerializerOptions options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    WriteIndented = true
+                };
+
+                //Deserialize into collection of HandData objects
+                IEnumerable<HandData> handHistory = JsonSerializer.Deserialize<IEnumerable<HandData>>(responseContent, options);
+
+                //If collection is null/empty, output accordingly
+                if (handHistory == null || !handHistory.Any())
+                {
+                    Console.WriteLine("No hand history found.");
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An error occurred: {e.Message}");
+            }
+        }
     }
-}
+}   

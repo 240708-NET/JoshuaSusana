@@ -1,28 +1,22 @@
-using System.ComponentModel.DataAnnotations;          //To use [Key]
-using System.ComponentModel.DataAnnotations.Schema;   //To use [ForeignKey()]
+using System.ComponentModel.DataAnnotations;        //To use [Key]
 
 namespace NoLimitTexasHoldemV2.Models
 {
     public class Card
     {
         
-        //Attributes/columns in Card table, keep in mind PK's, FK's, and nullables
+        //Attributes/columns in Card table, keep in mind PK's and nullables
         [Key]
         public int CardId { get; set; }
-        public string Rank { get; set; }
-        public string Suit { get; set; }
+        public string Rank { get; set; } = string.Empty;
+        public string Suit { get; set; } = string.Empty;
 
-        [ForeignKey("PlayerHandData")]
         public int? PlayerHandDataId { get; set; }
-        public HandData PlayerHandData { get; set; }
-
-        [ForeignKey("MachineHandData")]
+        public HandData? PlayerHandData { get; set; }
         public int? MachineHandDataId { get; set; }
-        public HandData MachineHandData { get; set; }
-
-        [ForeignKey("CommunityHandData")]
+        public HandData? MachineHandData { get; set; }
         public int? CommunityHandDataId { get; set; }
-        public HandData CommunityHandData { get; set; }
+        public HandData? CommunityHandData { get; set; }
         
         //Constructor that specifies exact card
         public Card(string suit, string rank)

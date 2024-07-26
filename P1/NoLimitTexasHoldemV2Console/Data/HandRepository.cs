@@ -1,6 +1,6 @@
 using NoLimitTexasHoldemV2.Models;      //To use HandData.cs
 using Microsoft.EntityFrameworkCore;    //To use things like DbContext
-using System.Text.Json;
+using System.Text.Json;                 //To use JsonSerializer
 
 namespace NoLimitTexasHoldemV2.Data
 {
@@ -42,13 +42,18 @@ namespace NoLimitTexasHoldemV2.Data
             List<HandData> handDataList = new List<HandData>();
             if (File.Exists(_path))
             {
-                var existingData = File.ReadAllText(_path);
+                string existingData = File.ReadAllText(_path);
+                //Deserialize json string into a list of HandData objects
                 handDataList = JsonSerializer.Deserialize<List<HandData>>(existingData);
             }
 
+            //Add HandData object that was passed in as a parameter into the list
             handDataList.Add(handData);
 
-            var jsonData = JsonSerializer.Serialize(handDataList, new JsonSerializerOptions { WriteIndented = true });
+            //Convert handDataList into a JSON-formatted string
+            string jsonData = JsonSerializer.Serialize(handDataList, new JsonSerializerOptions {WriteIndented = true});
+
+            //Write the json string into the file
             File.WriteAllText(_path, jsonData);
 
             //Entity framework version, simply add to context then save to database
@@ -58,45 +63,61 @@ namespace NoLimitTexasHoldemV2.Data
 
         public void ReadHandHistoryRepository()
         {
-            //If file doesn't exist/cannot be found...
             if (!File.Exists(_path))
             {
                 Console.WriteLine("Hand history file does not exist or could not be found.");
                 return;
             }
-            
-            //Read the JSON data from the file
-            var jsonData = File.ReadAllText(_path);
-            var handDataList = JsonSerializer.Deserialize<List<HandData>>(jsonData);
 
-            //Check if deserialization returned null
-            if (handDataList == null || handDataList.Count == 0)
+            string jsonString = File.ReadAllText(_path);
+
+            if (string.IsNullOrWhiteSpace(jsonString))
             {
-                Console.WriteLine("No hand history found.");
+                Console.WriteLine("Hand history file is empty.");
                 return;
-            }   
+            }
 
-            // Print each hand's details to the console
-            foreach (var handData in handDataList)
+            //Create a list for HandData from json file to go into
+            List<HandData> hands;
+
+            //Deserialize the json string into the list, otherwise thrown an exception
+            try
             {
-                Console.WriteLine($"Date and Time: {handData.HandDateTime}");
-                Console.WriteLine($"Player's Initial Stack: {handData.PlayerInitialStack}");
-                Console.WriteLine($"Machine's Initial Stack: {handData.MachineInitialStack}");
-                Console.WriteLine($"Bet: {handData.Bet}");
+                hands = JsonSerializer.Deserialize<List<HandData>>(jsonString);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to deserialize hand history file: {ex.Message}");
+                return;
+            }
 
-                Console.WriteLine("Player Hole Cards: " + string.Join(", ", handData.PlayerHoleCards.Select(card => $"{card.Rank} of {card.Suit}")));
-                Console.WriteLine("Machine Hole Cards: " + string.Join(", ", handData.MachineHoleCards.Select(card => $"{card.Rank} of {card.Suit}")));
-                Console.WriteLine("Community Cards: " + string.Join(", ", handData.CommunityCards.Select(card => $"{card.Rank} of {card.Suit}")));
+            //If list is null or empty, output no history found
+            if (hands == null || !hands.Any())
+            {
+                Console.WriteLine("No hand history found in the file.");
+                return;
+            }
 
+            foreach (var hand in hands)
+            {
+                //Skip entries with default values
+                if (hand.HandDateTime == default 
+                    && hand.PlayerInitialStack == 0 
+                    && hand.MachineInitialStack == 0 
+                    && string.IsNullOrWhiteSpace(hand.Outcome)
+                    && (hand.PlayerHoleCards == null || !hand.PlayerHoleCards.Any())
+                    && (hand.MachineHoleCards == null || !hand.MachineHoleCards.Any())
+                    && (hand.CommunityCards == null || !hand.CommunityCards.Any()))
+                {
+                    continue;
+                }
 
-                Console.WriteLine($"Player Hand Rank: {handData.PlayerHandRank}");
-                Console.WriteLine($"Machine Hand Rank: {handData.MachineHandRank}");
-                Console.WriteLine($"Outcome: {handData.Outcome}");
-                Console.WriteLine("-------------------------------------------------");
+                Console.WriteLine(hand.ToString());
+                Console.WriteLine("--------------------------------------------------");
             }
         }
 
-        public void ReadHandHistoryDB()
+        public IEnumerable<HandData> ReadHandHistoryDB()
         {
             //Get all HandData records that include the below entities, then convert to a list
             List<HandData> hands = context.Hands.Include(h => h.PlayerHoleCards)
@@ -107,24 +128,39 @@ namespace NoLimitTexasHoldemV2.Data
             if (hands.Count == 0)
             {
                 Console.WriteLine("No hand history found.");
-                return;
+                return new List<HandData>();
             }
 
             foreach (HandData hand in hands)
             {
                 Console.WriteLine(hand.ToString());
             }
+            return hands;
         }
 
         public void DeleteAllHandHistory()
         {
-            // Clear the JSON file by writing an empty array
-            File.WriteAllText(_path, "[]");
+            //Get all HandData records
+            List<HandData> hands = context.Hands
+                .Include(h => h.PlayerHoleCards)
+                .Include(h => h.MachineHoleCards)
+                .Include(h => h.CommunityCards)
+                .ToList();
 
-            //Get all HandData records, convert to list, remove records from context, then save to DB
-            List<HandData> hands = context.Hands.ToList();
+            foreach (var hand in hands)
+            {
+                // Remove the related cards first
+                context.Cards.RemoveRange(hand.PlayerHoleCards);
+                context.Cards.RemoveRange(hand.MachineHoleCards);
+                context.Cards.RemoveRange(hand.CommunityCards);
+            }
+
+            // Remove the HandData records
             context.Hands.RemoveRange(hands);
             context.SaveChanges();
+
+            // Clear the JSON file by writing an empty array
+            File.WriteAllText(_path, "[]");
         }
     }
 }
