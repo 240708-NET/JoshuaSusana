@@ -31,7 +31,7 @@ This project is a C# implementation of a No Limit Texas Hold'em poker game. The 
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/JoshuaSusana/P0/NoLimitTexasHoldem.git
+    git clone https://github.com/240708-NET/JoshuaSusana
     ```
 2. Open the solution file (`NoLimitTexasHoldem.sln`) in Visual Studio.
 3. Build the solution to restore NuGet packages and compile the project.
