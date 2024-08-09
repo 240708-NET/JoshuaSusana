@@ -36,7 +36,7 @@ This project is the second version of a No Limit Texas Hold'em poker game, enhan
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/JoshuaSusana/P1.git
+    git clone https://github.com/240708-NET/JoshuaSusana
     ```
 2. Open the solution file (`NoLimitTexasHoldemV2.sln`) in Visual Studio.
 3. Build the solution to restore NuGet packages and compile the project.
