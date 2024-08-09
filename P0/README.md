@@ -45,4 +45,4 @@ This project is a C# implementation of a No Limit Texas Hold'em poker game. The 
 
 ## Contributors
 
-- **[Joshua Susana]** - Developer
+- **Joshua Susana** - Developer
