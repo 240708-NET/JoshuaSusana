@@ -21,6 +21,7 @@ This project is the second version of a No Limit Texas Hold'em poker game, enhan
 - **C#**: Core programming language used for the project.
 - **.NET Core**: Framework used for building the API and console application.
 - **Entity Framework Core**: ORM used for database interactions.
+- **ASP.NET**: Framework used for building scalable and secure web applications and APIs.
 - **Visual Studio**: Integrated development environment (IDE) for coding, building, and debugging.
 
 ## Getting Started
