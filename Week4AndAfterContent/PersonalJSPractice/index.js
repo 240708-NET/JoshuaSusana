@@ -1,0 +1,1 @@
+let interestRate = 0.3;

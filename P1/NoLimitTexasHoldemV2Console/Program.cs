@@ -11,7 +11,7 @@ namespace NoLimitTexasHoldemV2
 {
     class Program
     {
-        //Creating object for sending HTTP requests and receiving HTTP responses
+        //Creating object for sending HTTP requests and receiving HTTP responses, static for singleton
         static HttpClient client = new HttpClient {BaseAddress = new Uri("http://localhost:5271/")};
         
         static void Main(string[] args)
